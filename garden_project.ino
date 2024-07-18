@@ -62,7 +62,7 @@ void handleSaveGet() {
                 "</form>"
                 "<h2>Saved Values:</h2>"
                 "ssid: " + ssid + "<br>"
-                "password: " + password
+                "password: " + password +
                 "</body></html>";
 
   server.send(200, "text/html", html);
