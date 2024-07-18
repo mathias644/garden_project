@@ -51,19 +51,19 @@ void handleNotFound() {
 }
 
 void handleSaveGet() {
-  String html = "<html><body>"
+  String html = "<html>"
+                "<head><meta name='viewport' content='width=device-width, initial-scale=1'><head>"
+                "<body>"
                 "<h1>ESP32 Input Form</h1>"
                 "<form action='/save' method='post'>"
                 "ssid: <input type='text' name='ssid'><br>"
                 "password: <input type='text' name='password'><br>"
                 "<input type='submit' value='Save'>"
-                "</form>";
-  
-  html += "<h2>Saved Values:</h2>"
-          "ssid: " + ssid + "<br>"
-          "password: " + password;
-
-  html += "</body></html>";
+                "</form>"
+                "<h2>Saved Values:</h2>"
+                "ssid: " + ssid + "<br>"
+                "password: " + password
+                "</body></html>";
 
   server.send(200, "text/html", html);
 }
