@@ -9,30 +9,45 @@ Preferences preferences;
 String ssid = "";
 String password = "";
 
-const int SensorPin = 36;
+const int SensorPin1 = 36;
+const int SensorPin2 = 39;
+const int SensorPin3 = 34;
+const int SensorPin4 = 35;
+const int SensorPin5 = 32;
 
 const int airvalue = 2590;
 const int watervalue = 1050;
 
-int soilMoistureValue = 0;
-int soilmoisturepercent = 0;
+unsigned long startTime;
+
+float humidity = 0;
+float temperature = 0;
+float hi = 0;
+
+DHT dht(33, DHT22);
 
 void handleRoot() {
-  soilMoistureValue = analogRead(SensorPin);
-  soilmoisturepercent = map(soilMoistureValue, airvalue, watervalue, 0, 100);
+  int soil1 = analogRead(SensorPin1);
+  int soil2 = analogRead(SensorPin2);
+  int soil3 = analogRead(SensorPin3);
+  int soil4 = analogRead(SensorPin4);
+  int soil5 = analogRead(SensorPin5);
 
-  String data = "{\"soil1\":" + String(soilmoisturepercent) + "}";
+  if(millis()>startTime+2000){
+    humidity = dht.readHumidity();
+    temperature = dht.readTemperature();
+    startTime=millis();
+  }
+
+  String data = "{\"soil1\":\"" + String(soil1) + 
+                "\",\"soil2\":\"" + String(soil2) +
+                "\",\"soil3\":\"" + String(soil3) + 
+                "\",\"soil4\":\"" + String(soil4) + 
+                "\",\"soil5\":\"" + String(soil5) + 
+                "\",\"humidity\":\"" + String(humidity) +
+                "\",\"temperature\":\"" + String(temperature) +
+                "\"}";
   server.send(200, "application/json", data);
-}
-
-void handleUpdatePins() {
-  String ssid = server.arg("ssid");
-  String password = server.arg("password");
-
-  preferences.putString("ssid", ssid);
-  preferences.putString("password", password);
-
-  server.send(200, "application/json", "{}");
 }
 
 void handleNotFound() {
@@ -62,7 +77,6 @@ void handleSaveGet() {
                 "</form>"
                 "<h2>Saved Values:</h2>"
                 "ssid: " + ssid + "<br>"
-                "password: " + password +
                 "</body></html>";
 
   server.send(200, "text/html", html);
@@ -108,7 +122,7 @@ void setup() {
       Serial.print(".");
       attempts++;
     }
-    
+
     if (WiFi.status() != WL_CONNECTED) {
       wifiSetServer();
     }
@@ -118,10 +132,12 @@ void setup() {
       Serial.println(WiFi.localIP());
 
       server.on("/", handleRoot);
-
       preferences.end();
+      dht.begin();
+      startTime=millis();
     }
   }
+  server.enableCORS();
   server.onNotFound(handleNotFound);
   server.begin();
 }
@@ -130,4 +146,3 @@ void loop() {
   server.handleClient();
   delay(2);
 }
-
