@@ -76,15 +76,6 @@ async function ServerCheck(){
 
         sensors = await getData();
 
-        if(sensors == "error"){
-            // add popup message 
-            // localStorage.serverip = "";
-            // ServerCheck();
-            // return;
-
-            // For testing the looks without the ESP32 connected.
-            sensors = {"temperature":"30","humidity":"65","soil1":"2160","soil2":"1160","soil3":"1560","soil4":"2560","soil5":"2500"};
-        }
         // buttons for refreshing the data and changing server address.
         mainContainer.innerHTML = `
                 <div class="max-w-fit border border-secondary-300 rounded-lg md:divide-x divide-secondary-300 mx-auto font-medium flex flex-col p-2 md:p-0 mt-4 bg-secondary-100 md:flex-row">
@@ -92,6 +83,15 @@ async function ServerCheck(){
                     <button onclick="ServerCheck()" class="block py-2 px-3 text-primary-950 md:rounded-r-lg hover:text-primary-800 hover:bg-secondary-200">Get Values</button>
                 </div>
         `
+
+        if(sensors == "error"){
+            // add popup message 
+            // return;
+
+            // For testing the looks without the ESP32 connected.
+            sensors = {"temperature":"30","humidity":"65","soil1":"2160","soil2":"1160","soil3":"1560","soil4":"2560","soil5":"2500"};
+        }
+
         // Sensors display part.
         mainContainer.innerHTML += '<div class="mx-auto mt-8 p-4 max-w-fit border border-secondary-300 rounded-md bg-primary-900">Temperature: ' + sensors.temperature + 'C°, Humidity: ' + sensors.humidity + '</div>';
         for(let i = 1; i < 6; i++ ){
