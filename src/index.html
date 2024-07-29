@@ -93,7 +93,7 @@ async function ServerCheck(){
         }
 
         // Sensors display part.
-        mainContainer.innerHTML += '<div class="mx-auto mt-8 p-4 max-w-fit border border-secondary-300 rounded-md bg-primary-900">Temperature: ' + sensors.temperature + 'C°, Humidity: ' + sensors.humidity + '</div>';
+        mainContainer.innerHTML += `<div class="mx-auto mt-8 p-4 max-w-fit border border-secondary-300 rounded-md bg-primary-900">Temperature: ${sensors.temperature}C°, Humidity: ${sensors.humidity}</div>`;
         for(let i = 1; i < 6; i++ ){
             let sensorTag;
             let sensorValue = calculatePercent(sensors["soil"+i],2560,1050);
