@@ -16,9 +16,7 @@
             </div>
         </nav>
     </header>
-    <span class="container" id="main-container">
-
-    </span>
+    <span class="container" id="main-container"></span>
 
 <script>
 function calculatePercent(x, fromMin, fromMax) {
@@ -48,12 +46,13 @@ async function getData() {
 }
 
 async function ServerCheck(){
+    const mainContainer = document.getElementById("main-container")
     if (!localStorage.serverip) {
-        document.getElementById("main-container").innerHTML = `
+        mainContainer.innerHTML = `
         <div class="mx-auto text-center mt-8 p-4 max-w-fit border border-primary-200 rounded-md bg-primary-900">
             <h1 class="">Please enter server address:</h1>
             <input class="text-black p-1 my-1 w-full rounded-md border-gray-200 shadow-sm sm:text-sm" id="addressInput" type="text">
-            <button onclick="updateServerAddress()" class="group relative inline-block text-sm font-medium text-white focus:outline-none mt-1" href="#" >
+            <button onclick="updateServerAddress()" class="group relative inline text-sm font-medium text-white focus:outline-none mt-1">
                 <span class="absolute inset-0 border border-secondary-700 group-active:border-secondary-400"></span>
                 <span class="block border border-secondary-700 bg-secondary-700 px-12 py-3 transition-transform active:border-secondary-400 active:bg-secondary-400 group-hover:-translate-x-1 group-hover:-translate-y-1">
                     Save
@@ -61,9 +60,10 @@ async function ServerCheck(){
             </button>
         </div>`;
         const addressInput = document.getElementById('addressInput');
-    } else {
+    } 
+    else {
         // Loading spinner 
-        document.getElementById("main-container").innerHTML = `<div role="status" class="mx-auto w-min">
+        mainContainer.innerHTML = `<div role="status" class="mx-auto w-min">
             <svg aria-hidden="true" class="mt-5 w-16 h-16 text-white animate-spin fill-secondary-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor"/>
                 <path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill"/>
@@ -72,6 +72,7 @@ async function ServerCheck(){
         </div>`;
 
         let sensors;
+        let settings = JSON.parse(localStorage?.settings ?? '{}');
 
         sensors = await getData();
 
@@ -84,17 +85,45 @@ async function ServerCheck(){
             // For testing the looks without the ESP32 connected.
             sensors = {"temperature":"30","humidity":"65","soil1":"2160","soil2":"1160","soil3":"1560","soil4":"2560","soil5":"2500"};
         }
-        document.getElementById("main-container").innerHTML = `
-                <div class="max-w-fit border border-secondary-300 rounded-lg divide-x divide-secondary-300 mx-auto font-medium flex flex-col p-2 md:p-0 mt-4 bg-secondary-100 md:flex-row">
-                    <button onclick="clearServerAddress()" class="block py-2 px-3 text-primary-950 rounded-l-lg hover:text-primary-800 hover:bg-secondary-200">Edit address</button>
-                    <button onclick="ServerCheck()" class="block py-2 px-3 text-primary-950 rounded-r-lg hover:text-primary-800 hover:bg-secondary-200">Get Values</button>
+        // buttons for refreshing the data and changing server address.
+        mainContainer.innerHTML = `
+                <div class="max-w-fit border border-secondary-300 rounded-lg md:divide-x divide-secondary-300 mx-auto font-medium flex flex-col p-2 md:p-0 mt-4 bg-secondary-100 md:flex-row">
+                    <button onclick="clearServerAddress()" class="block py-2 px-3 text-primary-950 md:rounded-l-lg hover:text-primary-800 hover:bg-secondary-200">Edit address</button>
+                    <button onclick="ServerCheck()" class="block py-2 px-3 text-primary-950 md:rounded-r-lg hover:text-primary-800 hover:bg-secondary-200">Get Values</button>
                 </div>
         `
-        document.getElementById("main-container").innerHTML += '<div class="mx-auto mt-8 p-4 max-w-fit border border-secondary-300 rounded-md bg-primary-900">Temperature: ' + sensors.temperature + 'C°, Humidity: ' + sensors.humidity + '</div>';
+        // Sensors display part.
+        mainContainer.innerHTML += '<div class="mx-auto mt-8 p-4 max-w-fit border border-secondary-300 rounded-md bg-primary-900">Temperature: ' + sensors.temperature + 'C°, Humidity: ' + sensors.humidity + '</div>';
         for(let i = 1; i < 6; i++ ){
-            document.getElementById("main-container").innerHTML += '<div class="mx-auto mt-8 p-4 max-w-fit border border-secondary-300 rounded-md bg-primary-900">Soil sensor ' + i + ': ' + calculatePercent(sensors["soil"+i],2560,1050) +'% moisture</div>';
+            let sensorTag;
+            let sensorValue = calculatePercent(sensors["soil"+i],2560,1050);
+
+            if(settings.hasOwnProperty(["soil"+i]) && settings["soil"+i] != ""){
+                sensorTag = settings["soil"+i];
+            } else {
+                sensorTag = "Soil sensor " + i;
+            }
+
+            mainContainer.innerHTML += `<div id="${"soil"+i}-container" class="mx-auto mt-8 p-4 max-w-fit border border-secondary-300 rounded-md bg-primary-900">
+                <button onclick="editTag('${"soil"+i}-container')" class="p-1 -translate-y-3 -translate-x-3">✎</button>
+                ${sensorTag}:  ${sensorValue}% moisture 
+                </div>`;
         }
     }
+}
+
+function editTag(sensorContainer) {
+    const sensor = sensorContainer.split("-")[0];
+    document.getElementById(sensorContainer).innerHTML = `<input placeholder="sensor name" class="text-black p-1 my-1 rounded-md border-gray-200 shadow-sm sm:text-sm" id="${sensor}" type="text">
+        <button onclick="saveTag('${sensor}')" class="max-w-fit border border-secondary-300 rounded-lg mx-auto font-medium bg-secondary-100 py-2 px-3 text-primary-950 hover:text-primary-800 hover:bg-secondary-200">Save</button>
+        <button onclick="ServerCheck()" class="max-w-fit border border-secondary-300 rounded-lg mx-auto font-medium bg-secondary-100 py-2 px-3 text-primary-950 hover:text-primary-800 hover:bg-secondary-200">cancel</button>`
+}
+
+function saveTag(sensor) {
+    let settings = JSON.parse(localStorage?.settings ?? '{}');
+    settings[sensor] = document.getElementById(sensor).value;
+    localStorage.setItem("settings", JSON.stringify(settings));
+    ServerCheck();
 }
 
 function clearServerAddress() {
